@@ -1,3 +1,8 @@
+# NB: this package includes a forked version of Bloom filter code
+# from Apache Cassandra.  FPC has granted a bundling exception since
+# it is a fork; see https://fedorahosted.org/fpc/ticket/401 and
+# http://meetbot.fedoraproject.org/fedora-meeting-1/2014-03-20/fedora-meeting-1.2014-03-20-17.05.html
+
 %global streamlib_version 2.6.0
 %global commit 214c92595d5be3a1cedc881b50231ccb34862074
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
