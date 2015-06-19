@@ -9,7 +9,7 @@
 
 Name:           stream-lib
 Version:        %{streamlib_version}
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Stream summarizer and cardinality estimator
 License:        ASL 2.0
 URL:            https://github.com/addthis/stream-lib/
@@ -55,6 +55,9 @@ This package provides %{summary}.
 %doc LICENSE.txt
 
 %changelog
+* Fri Jun 19 2015 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.6.0-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_23_Mass_Rebuild
+
 * Sun Jun 08 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.6.0-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_21_Mass_Rebuild
 
