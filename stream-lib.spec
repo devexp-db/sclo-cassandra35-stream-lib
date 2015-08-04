@@ -9,7 +9,7 @@
 
 Name:           stream-lib
 Version:        %{streamlib_version}
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Stream summarizer and cardinality estimator
 License:        ASL 2.0
 URL:            https://github.com/addthis/stream-lib/
@@ -20,7 +20,6 @@ BuildRequires:  maven-local
 BuildRequires:  mvn(it.unimi.dsi:fastutil)
 
 %description
-
 A Java library for summarizing data in streams for which it is
 infeasible to store all events. More specifically, there are classes
 for estimating: cardinality (i.e. counting things); set membership;
@@ -38,7 +37,10 @@ This package provides %{summary}.
 %setup -qn %{name}-%{commit}
 
 %pom_remove_plugin org.apache.maven.plugins:maven-shade-plugin pom.xml
-
+# Unneeded task
+%pom_remove_plugin :maven-source-plugin
+# Fix doclint issues
+%pom_remove_plugin :maven-javadoc-plugin
 
 %build
 %mvn_build -f
@@ -48,13 +50,16 @@ This package provides %{summary}.
 
 %files -f .mfiles
 %doc README.mdown
-%doc LICENSE.txt
-%dir %{_javadir}/%{name}
+%license LICENSE.txt
 
 %files javadoc -f .mfiles-javadoc
-%doc LICENSE.txt
+%license LICENSE.txt
 
 %changelog
+* Tue Aug 04 2015 gil cattaneo <puntogil@libero.it> 2.6.0-4
+- Fix FTBFS RHBZ#1240033
+- Introduce license macro
+
 * Fri Jun 19 2015 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.6.0-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_23_Mass_Rebuild
 
