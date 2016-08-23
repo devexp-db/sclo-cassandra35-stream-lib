@@ -1,23 +1,32 @@
+%{?scl:%scl_package stream-lib}
+%{!?scl:%global pkg_name %{name}}
+
 # NB: this package includes a forked version of Bloom filter code
 # from Apache Cassandra.  FPC has granted a bundling exception since
 # it is a fork; see https://fedorahosted.org/fpc/ticket/401 and
 # http://meetbot.fedoraproject.org/fedora-meeting-1/2014-03-20/fedora-meeting-1.2014-03-20-17.05.html
 
-%global streamlib_version 2.6.0
 %global commit 214c92595d5be3a1cedc881b50231ccb34862074
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 
-Name:           stream-lib
-Version:        %{streamlib_version}
-Release:        5%{?dist}
+Name:           %{?scl_prefix}stream-lib
+Version:        2.6.0
+Release:        7%{?dist}
 Summary:        Stream summarizer and cardinality estimator
 License:        ASL 2.0
-URL:            https://github.com/addthis/stream-lib/
-Source0:        https://github.com/addthis/stream-lib/archive/%{commit}/stream-lib-%{commit}.tar.gz
+URL:            https://github.com/addthis/%{pkg_name}/
+Source0:        https://github.com/addthis/%{pkg_name}/archive/%{commit}/%{pkg_name}-%{commit}.tar.gz
 BuildArch:      noarch
 
-BuildRequires:  maven-local
-BuildRequires:  mvn(it.unimi.dsi:fastutil)
+BuildRequires:  %{?scl_java_prefix}maven-local
+BuildRequires:  %{?scl_mvn_prefix}mvn(org.sonatype.oss:oss-parent:pom:)
+# remove for scl package because of missing dependency
+%{!?scl:BuildRequires:  mvn(it.unimi.dsi:fastutil)}
+# missing test dependencies
+#BuildRequires:  mvn(colt:colt)
+#BuildRequires:  mvn(com.googlecode.charts4j:charts4j)
+#BuildRequires:  mvn(org.apache.mahout:mahout-math)
+%{?scl:Requires: %scl_runtime}
 
 %description
 A Java library for summarizing data in streams for which it is
@@ -34,7 +43,8 @@ Summary:        API documentation for %{name}
 This package provides %{summary}.
 
 %prep
-%setup -qn %{name}-%{commit}
+%{?scl_enable}
+%setup -qn %{pkg_name}-%{commit}
 
 %pom_remove_plugin org.apache.maven.plugins:maven-shade-plugin pom.xml
 # Unneeded task
@@ -42,11 +52,23 @@ This package provides %{summary}.
 # Fix doclint issues
 %pom_remove_plugin :maven-javadoc-plugin
 
+# remove missing dependency for scl package
+%{?scl:%pom_remove_dep it.unimi.dsi:fastutil}
+
+# remove file requiring missing dependency
+%{?scl:rm src/main/java/com/clearspring/analytics/stream/quantile/QDigest.java}
+%{?scl_disable}
+
 %build
-%mvn_build -f
+%{?scl_enable}
+# tests are skipped due to missing test dependencies
+%mvn_build -f 
+%{?scl_disable}
 
 %install
+%{?scl_enable}
 %mvn_install
+%{?scl_disable}
 
 %files -f .mfiles
 %doc README.mdown
@@ -56,6 +78,12 @@ This package provides %{summary}.
 %license LICENSE.txt
 
 %changelog
+* Tue Aug 23 2016 Tomas Repik <trepik@redhat.com> - 2.6.0-7
+- remove unneeded missing dependency for scl package
+
+* Wed Aug 10 2016 Tomas Repik <trepik@redhat.com>
+- scl conversion
+
 * Fri Feb 05 2016 Fedora Release Engineering <releng@fedoraproject.org> - 2.6.0-5
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_24_Mass_Rebuild
 
