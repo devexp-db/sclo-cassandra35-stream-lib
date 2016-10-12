@@ -11,15 +11,15 @@
 
 Name:           %{?scl_prefix}stream-lib
 Version:        2.6.0
-Release:        7%{?dist}
+Release:        8%{?dist}
 Summary:        Stream summarizer and cardinality estimator
 License:        ASL 2.0
 URL:            https://github.com/addthis/%{pkg_name}/
 Source0:        https://github.com/addthis/%{pkg_name}/archive/%{commit}/%{pkg_name}-%{commit}.tar.gz
 BuildArch:      noarch
 
-BuildRequires:  %{?scl_java_prefix}maven-local
-BuildRequires:  %{?scl_mvn_prefix}mvn(org.sonatype.oss:oss-parent:pom:)
+BuildRequires:  %{?scl_prefix_maven}maven-local
+BuildRequires:  %{?scl_prefix_maven}mvn(org.sonatype.oss:oss-parent:pom:)
 # remove for scl package because of missing dependency
 %{!?scl:BuildRequires:  mvn(it.unimi.dsi:fastutil)}
 # missing test dependencies
@@ -43,9 +43,10 @@ Summary:        API documentation for %{name}
 This package provides %{summary}.
 
 %prep
-%{?scl_enable}
 %setup -qn %{pkg_name}-%{commit}
 
+%{?scl:scl enable %{scl_maven} %{scl} - << "EOF"}
+# Unneeded plugin
 %pom_remove_plugin org.apache.maven.plugins:maven-shade-plugin pom.xml
 # Unneeded task
 %pom_remove_plugin :maven-source-plugin
@@ -54,21 +55,21 @@ This package provides %{summary}.
 
 # remove missing dependency for scl package
 %{?scl:%pom_remove_dep it.unimi.dsi:fastutil}
+%{?scl:EOF}
 
 # remove file requiring missing dependency
 %{?scl:rm src/main/java/com/clearspring/analytics/stream/quantile/QDigest.java}
-%{?scl_disable}
 
 %build
-%{?scl_enable}
+%{?scl:scl enable %{scl_maven} %{scl} - << "EOF"}
 # tests are skipped due to missing test dependencies
 %mvn_build -f 
-%{?scl_disable}
+%{?scl:EOF}
 
 %install
-%{?scl_enable}
+%{?scl:scl enable %{scl_maven} %{scl} - << "EOF"}
 %mvn_install
-%{?scl_disable}
+%{?scl:EOF}
 
 %files -f .mfiles
 %doc README.mdown
@@ -78,6 +79,9 @@ This package provides %{summary}.
 %license LICENSE.txt
 
 %changelog
+* Wed Oct 12 2016 Tomas Repik <trepik@redhat.com> - 2.6.0-8
+- use standard SCL macros
+
 * Tue Aug 23 2016 Tomas Repik <trepik@redhat.com> - 2.6.0-7
 - remove unneeded missing dependency for scl package
 
